@@ -24,7 +24,7 @@ textarea{min-height:70px;resize:vertical}
 .card .x{position:absolute;top:4px;left:6px;border:0;background:none;color:#c0392b;font-size:18px;cursor:pointer}
 .btn{background:#0f766e;color:#fff;border:0;border-radius:10px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer;font-size:15px}
 .btn.l{background:#e6f4f1;color:#0f766e}.btn.big{width:100%;padding:14px;font-size:17px;margin-top:10px}
-.tpl{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.tpl{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .tpl button{padding:8px 2px;border:2px solid #cbd5d1;border-radius:8px;background:#fff;font:inherit;font-size:13px;cursor:pointer}
 .tpl button.on{border-color:#0f766e;background:#e6f4f1;font-weight:700}
 .colors{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
@@ -58,6 +58,7 @@ textarea{min-height:70px;resize:vertical}
 .t3{padding:40px 46px}
 .t3 h1{border-bottom:4px solid var(--c);padding-bottom:8px}
 #cv.t3 h3{border:0;font-size:14px;letter-spacing:2px}
+.t5{padding:40px 46px;font-family:Arial,Tahoma,sans-serif}#cv.t5 h3{font-size:14px;border-bottom:1px solid #111}
 .t4{padding:40px 46px;text-align:center}
 .t4 .ph{margin:0 auto 10px;display:block}
 #cv.t4 h3{text-align:center;border:0;border-top:1px solid #ccc;padding-top:12px}
@@ -113,7 +114,7 @@ textarea{min-height:70px;resize:vertical}
 </main>
 <script>
 var K="seefy_v1",COLS=["#0f766e","#1d4ed8","#9333ea","#be123c","#c2410c","#111827","#0e7490","#4d7c0f"];
-var TN=["جانبي","هيدر ملوّن","بسيط","مركزي"];
+var TN=["جانبي","هيدر ملوّن","بسيط","مركزي","ATS"];
 var D={t:1,c:COLS[0],lang:"ar",photo:"",name:"",title:"",phone:"",email:"",city:"",link:"",sum:"",exps:[],edus:[],skills:"",langs:"",certs:"",proj:""};
 try{var s=JSON.parse(localStorage.getItem(K));if(s)for(var k in s)D[k]=s[k]}catch(e){}
 var $=function(i){return document.getElementById(i)};
@@ -142,7 +143,7 @@ function chips(s){return s.split(/[,،\n]/).map(function(x){return x.trim()}).fi
 function sec(h,b){return b?'<h3>'+h+'</h3>'+b:""}
 function items(a,ex){return a.filter(function(e){return e.r||e.co}).map(function(e){return '<div class="it"><b>'+esc(e.r)+'</b>'+(e.co?' - '+esc(e.co):"")+(e.p?'<div class="m">'+esc(e.p)+'</div>':"")+(ex&&e.d?'<p>'+esc(e.d.split("\n").filter(Boolean).map(function(x){return "• "+x.replace(/^[•\-\*]\s*/,"")}).join("\n"))+'</p>':"")+'</div>'}).join("")}
 function render(){
- var L=T[D.lang],c=$("cv"),dir=D.lang=="ar"?"rtl":"ltr";c.dir=dir;c.style.setProperty("--c",D.c);c.className="t"+D.t;
+ var L=T[D.lang],c=$("cv"),dir=D.lang=="ar"?"rtl":"ltr";c.dir=dir;c.style.setProperty("--c",D.c);c.className="t"+D.t;if(D.t==5)c.style.setProperty("--c","#111");
  var ct=[D.phone,D.email,D.city,D.link].filter(Boolean).map(esc);
  var ph=D.photo?'<img class="ph" src="'+D.photo+'">':"";
  var sk=chips(D.skills).map(function(x){return '<span class="chip">'+esc(x)+'</span>'}).join("");
@@ -155,6 +156,7 @@ function render(){
  if(D.t==1){h='<div class="s">'+ph+sec(L.ct,ct.map(function(x){return '<div style="margin:5px 0;word-break:break-all">'+x+'</div>'}).join(""))+sec(L.sk,sk)+sec(L.lg,lg)+'</div><div class="mn"><h1>'+nm+'</h1>'+ti+sec(L.sum,sm)+sec(L.exp,ex)+sec(L.edu,ed)+sec(L.pj,pj)+sec(L.ce,ce)+'</div>'}
  else if(D.t==2){h='<div class="hd">'+ph+'<div><h1>'+nm+'</h1>'+ti+'<div class="ct">'+ct.join(" &nbsp;|&nbsp; ")+'</div></div></div><div class="bd">'+sec(L.sum,sm)+sec(L.exp,ex)+sec(L.edu,ed)+sec(L.sk,sk)+sec(L.lg,lg)+sec(L.pj,pj)+sec(L.ce,ce)+'</div>'}
  else if(D.t==3){h='<h1>'+nm+'</h1>'+ti+'<div style="margin-top:8px;color:#555;font-size:13px">'+ct.join(" &nbsp;•&nbsp; ")+'</div>'+sec(L.sum,sm)+sec(L.exp,ex)+sec(L.edu,ed)+sec(L.sk,'<div>'+chips(D.skills).map(esc).join(" • ")+'</div>')+sec(L.lg,chips(D.langs).map(esc).join(" • "))+sec(L.pj,pj)+sec(L.ce,ce)}
+else if(D.t==5){h='<h1 style="font-size:28px">'+nm+'</h1>'+ti+'<div style="margin-top:6px;font-size:13px">'+ct.join(" | ")+'</div>'+sec(L.sum,sm)+sec(L.exp,ex)+sec(L.edu,ed)+sec(L.sk,'<div>'+chips(D.skills).map(esc).join(" • ")+'</div>')+sec(L.lg,chips(D.langs).map(esc).join(" • "))+sec(L.pj,pj)+sec(L.ce,ce)}
  else{h=ph+'<h1>'+nm+'</h1>'+ti+'<div style="margin-top:8px;color:#555;font-size:13px">'+ct.join(" &nbsp;•&nbsp; ")+'</div><div class="l">'+sec(L.sum,sm)+sec(L.exp,ex)+sec(L.edu,ed)+'</div>'+sec(L.sk,sk)+sec(L.lg,chips(D.langs).map(esc).join(" • "))+sec(L.pj,pj)+sec(L.ce,ce)}
  c.innerHTML=h;fit()}
 function fit(){var w=$("wrap").clientWidth-24;if(w<=0)return;var z=Math.min(1,w/794);$("cv").style.zoom=z}
