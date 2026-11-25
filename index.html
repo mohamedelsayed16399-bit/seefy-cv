@@ -35,13 +35,14 @@ textarea{min-height:70px;resize:vertical}
 .pvbtn{display:none}
 .tips{font-size:13px;color:#555;line-height:1.8}
 #wrap{overflow:auto;background:#d9e2e0;border-radius:14px;padding:12px;display:flex;justify-content:center}
-#pagebox{transform-origin:top center}
+
 #cv{width:794px;min-height:1123px;background:#fff;box-shadow:0 4px 18px #0003;font-size:14px;line-height:1.6;color:#222;overflow:hidden}
 /* templates */
 #cv h1{margin:0;font-size:32px;line-height:1.2}
 #cv h3{margin:18px 0 6px;font-size:15px;text-transform:uppercase;letter-spacing:.5px;color:var(--c);border-bottom:2px solid var(--c);padding-bottom:3px}
 #cv .it{margin:8px 0}#cv .it b{font-size:15px}#cv .it .m{color:#666;font-size:13px}
-#cv .it p{margin:3px 0;white-space:pre-wrap}
+#cv .it,#cv h3{break-inside:avoid}#cv h3{break-after:avoid}
+#cv[dir=ltr] .it p{text-align:left}#cv .it p{margin:3px 0;white-space:pre-wrap}
 #cv .chip{display:inline-block;background:var(--c);color:#fff;border-radius:14px;padding:2px 11px;margin:3px;font-size:13px}
 #cv .ph{width:130px;height:130px;border-radius:50%;object-fit:cover;border:4px solid #fff}
 .t1{display:flex;min-height:1123px}
@@ -63,14 +64,14 @@ textarea{min-height:70px;resize:vertical}
 .t4 .l{text-align:start}
 @media(max-width:860px){
  main.pv .pvbtn{display:block}
- .tabs{display:flex}main{grid-template-columns:1fr;padding:10px}
+ .tabs{display:flex}main{grid-template-columns:minmax(0,1fr);padding:10px}#wrap{padding:6px}
  main.pv .panel{display:none}main.ed #wrap,main.ed .pvbtn{display:none}
 }
 @media print{
  body{background:#fff}header,.tabs,.panel,.pvbtn{display:none!important}
  main{display:block;padding:0;max-width:none}
  #wrap{padding:0;background:none;overflow:visible;display:block}
- #pagebox{transform:none!important;height:auto!important}
+ 
  #cv{box-shadow:none;width:100%}
  @page{size:A4;margin:0}
  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -96,9 +97,11 @@ textarea{min-height:70px;resize:vertical}
 <h2>المهارات</h2><label>اكتبهم بينهم فاصلة (،)</label><input id="skills" placeholder="إكسل، خدمة عملاء، Photoshop">
 <h2>اللغات</h2><input id="langs" placeholder="العربية (الأم)، English (جيد جداً)">
 <h2>كورسات وشهادات</h2><textarea id="certs" placeholder="كل شهادة في سطر"></textarea>
+<h2>مشاريع وإنجازات</h2><textarea id="proj" placeholder="كل مشروع أو إنجاز في سطر"></textarea>
 <h2>قوة الـ CV</h2><div class="score"><b id="sc"></b></div><div class="tips" id="tips"></div>
 <button class="btn big" id="print">⬇️ حمّل PDF / اطبع</button>
 <div class="row" style="margin-top:8px"><button class="btn l" id="exp">💾 احفظ نسخة (ملف)</button><button class="btn l" id="imp">📂 افتح نسخة</button></div>
+<a class="btn l" id="wa" style="display:block;text-align:center;text-decoration:none;margin-top:8px" target="_blank" href="https://wa.me/?text=%D8%AC%D8%B1%D8%A8%20%D8%B3%D9%8A%D9%81%D9%8A%20%D9%84%D8%B9%D9%85%D9%84%20CV%20%D8%A8%D8%A7%D9%84%D8%B9%D8%B1%D8%A8%D9%8A%20%D9%85%D8%AC%D8%A7%D9%86%D8%A7%3A%20https%3A%2F%2Fmohamedelsayed16399-bit.github.io%2Fseefy-cv%2F">📲 ابعت سيفي لصاحبك على واتساب</a>
 <button class="btn l" id="sample" style="width:100%;margin-top:8px">جرّب بيانات تجريبية</button>
 <button class="btn l" id="clear" style="width:100%;margin-top:8px;color:#c0392b">مسح كل حاجة</button>
 <input type="file" id="impf" accept=".json" hidden>
@@ -110,14 +113,14 @@ textarea{min-height:70px;resize:vertical}
 <script>
 var K="seefy_v1",COLS=["#0f766e","#1d4ed8","#9333ea","#be123c","#c2410c","#111827","#0e7490","#4d7c0f"];
 var TN=["جانبي","هيدر ملوّن","بسيط","مركزي"];
-var D={t:1,c:COLS[0],lang:"ar",photo:"",name:"",title:"",phone:"",email:"",city:"",link:"",sum:"",exps:[],edus:[],skills:"",langs:"",certs:""};
+var D={t:1,c:COLS[0],lang:"ar",photo:"",name:"",title:"",phone:"",email:"",city:"",link:"",sum:"",exps:[],edus:[],skills:"",langs:"",certs:"",proj:""};
 try{var s=JSON.parse(localStorage.getItem(K));if(s)for(var k in s)D[k]=s[k]}catch(e){}
 var $=function(i){return document.getElementById(i)};
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
-var T={ar:{sum:"نبذة",exp:"الخبرات",edu:"التعليم",sk:"المهارات",lg:"اللغات",ce:"كورسات وشهادات",ct:"التواصل"},
-en:{sum:"Summary",exp:"Experience",edu:"Education",sk:"Skills",lg:"Languages",ce:"Certificates",ct:"Contact"}};
+var T={ar:{sum:"نبذة",exp:"الخبرات",edu:"التعليم",sk:"المهارات",lg:"اللغات",ce:"كورسات وشهادات",pj:"مشاريع وإنجازات",ct:"التواصل"},
+en:{sum:"Summary",exp:"Experience",edu:"Education",sk:"Skills",lg:"Languages",ce:"Certificates",pj:"Projects & Achievements",ct:"Contact"}};
 function save(){try{localStorage.setItem(K,JSON.stringify(D))}catch(e){alert("الصورة كبيرة، جرّب صورة أصغر")}}
-var F=["name","title","phone","email","city","link","sum","skills","langs","certs"];
+var F=["name","title","phone","email","city","link","sum","skills","langs","certs","proj"];
 F.forEach(function(f){$(f).addEventListener("input",function(){D[f]=$(f).value;upd()})});
 $("lang").onchange=function(){D.lang=this.value;upd()};
 function fill(){F.forEach(function(f){$(f).value=D[f]||""});$("lang").value=D.lang;lists();tp();upd()}
@@ -144,16 +147,16 @@ function render(){
  var sk=chips(D.skills).map(function(x){return '<span class="chip">'+esc(x)+'</span>'}).join("");
  var lg=chips(D.langs).map(esc).join("<br>");
  var ce=D.certs.split("\n").filter(function(x){return x.trim()}).map(function(x){return "• "+esc(x)}).join("<br>");
+ var pj=D.proj.split("\n").filter(function(x){return x.trim()}).map(function(x){return "• "+esc(x)}).join("<br>");
  var sm=D.sum?'<p style="white-space:pre-wrap;margin:0">'+esc(D.sum)+'</p>':"";
  var nm=esc(D.name||(D.lang=="ar"?"اسمك هنا":"Your Name")),ti=D.title?'<div style="font-size:17px;opacity:.9;margin-top:4px">'+esc(D.title)+'</div>':"";
  var ex=items(D.exps,1),ed=items(D.edus,0),h;
- if(D.t==1){h='<div class="s">'+ph+sec(L.ct,ct.map(function(x){return '<div style="margin:5px 0;word-break:break-all">'+x+'</div>'}).join(""))+sec(L.sk,sk)+sec(L.lg,lg)+'</div><div class="mn"><h1>'+nm+'</h1>'+ti+sec(L.sum,sm)+sec(L.exp,ex)+sec(L.edu,ed)+sec(L.ce,ce)+'</div>'}
- else if(D.t==2){h='<div class="hd">'+ph+'<div><h1>'+nm+'</h1>'+ti+'<div class="ct">'+ct.join(" &nbsp;|&nbsp; ")+'</div></div></div><div class="bd">'+sec(L.sum,sm)+sec(L.exp,ex)+sec(L.edu,ed)+sec(L.sk,sk)+sec(L.lg,lg)+sec(L.ce,ce)+'</div>'}
- else if(D.t==3){h='<h1>'+nm+'</h1>'+ti+'<div style="margin-top:8px;color:#555;font-size:13px">'+ct.join(" &nbsp;•&nbsp; ")+'</div>'+sec(L.sum,sm)+sec(L.exp,ex)+sec(L.edu,ed)+sec(L.sk,'<div>'+chips(D.skills).map(esc).join(" • ")+'</div>')+sec(L.lg,chips(D.langs).map(esc).join(" • "))+sec(L.ce,ce)}
- else{h=ph+'<h1>'+nm+'</h1>'+ti+'<div style="margin-top:8px;color:#555;font-size:13px">'+ct.join(" &nbsp;•&nbsp; ")+'</div><div class="l">'+sec(L.sum,sm)+sec(L.exp,ex)+sec(L.edu,ed)+'</div>'+sec(L.sk,sk)+sec(L.lg,chips(D.langs).map(esc).join(" • "))+sec(L.ce,ce)}
+ if(D.t==1){h='<div class="s">'+ph+sec(L.ct,ct.map(function(x){return '<div style="margin:5px 0;word-break:break-all">'+x+'</div>'}).join(""))+sec(L.sk,sk)+sec(L.lg,lg)+'</div><div class="mn"><h1>'+nm+'</h1>'+ti+sec(L.sum,sm)+sec(L.exp,ex)+sec(L.edu,ed)+sec(L.pj,pj)+sec(L.ce,ce)+'</div>'}
+ else if(D.t==2){h='<div class="hd">'+ph+'<div><h1>'+nm+'</h1>'+ti+'<div class="ct">'+ct.join(" &nbsp;|&nbsp; ")+'</div></div></div><div class="bd">'+sec(L.sum,sm)+sec(L.exp,ex)+sec(L.edu,ed)+sec(L.sk,sk)+sec(L.lg,lg)+sec(L.pj,pj)+sec(L.ce,ce)+'</div>'}
+ else if(D.t==3){h='<h1>'+nm+'</h1>'+ti+'<div style="margin-top:8px;color:#555;font-size:13px">'+ct.join(" &nbsp;•&nbsp; ")+'</div>'+sec(L.sum,sm)+sec(L.exp,ex)+sec(L.edu,ed)+sec(L.sk,'<div>'+chips(D.skills).map(esc).join(" • ")+'</div>')+sec(L.lg,chips(D.langs).map(esc).join(" • "))+sec(L.pj,pj)+sec(L.ce,ce)}
+ else{h=ph+'<h1>'+nm+'</h1>'+ti+'<div style="margin-top:8px;color:#555;font-size:13px">'+ct.join(" &nbsp;•&nbsp; ")+'</div><div class="l">'+sec(L.sum,sm)+sec(L.exp,ex)+sec(L.edu,ed)+'</div>'+sec(L.sk,sk)+sec(L.lg,chips(D.langs).map(esc).join(" • "))+sec(L.pj,pj)+sec(L.ce,ce)}
  c.innerHTML=h;fit()}
-function fit(){var w=$("wrap").clientWidth-24,s=Math.min(1,w/794),b=$("pagebox");b.style.transform="scale("+s+")";b.style.width="794px";b.style.height=($("cv").offsetHeight*s)+"px";b.style.marginInline=s<1?"0":"auto";
- if(s<1){b.style.transformOrigin=document.dir=="rtl"?"top right":"top center"}}
+function fit(){var w=$("wrap").clientWidth-24;if(w<=0)return;var z=Math.min(1,w/794);$("cv").style.zoom=z}
 function score(){var p=0,t=[];
  function ck(ok,pts,tip){if(ok)p+=pts;else t.push(tip)}
  ck(D.name,10,"اكتب اسمك");ck(D.title,10,"حط مسمى وظيفي واضح");ck(D.phone,10,"ضيف رقم موبايل");ck(/@/.test(D.email),10,"ضيف إيميل صحيح");
@@ -168,15 +171,15 @@ $("print").onclick=function(){document.title=(D.name||"CV")+" - CV";window.print
 $("exp").onclick=function(){var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(D)],{type:"application/json"}));a.download="cv-backup.json";a.click()};
 $("imp").onclick=function(){$("impf").click()};
 $("impf").onchange=function(){var f=this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var o=JSON.parse(r.result);for(var k in o)D[k]=o[k];fill()}catch(e){alert("الملف مش صالح")}};r.readAsText(f)};
-$("clear").onclick=function(){if(confirm("تمسح كل البيانات؟")){var t=D.t,c=D.c;D={t:t,c:c,lang:"ar",photo:"",name:"",title:"",phone:"",email:"",city:"",link:"",sum:"",exps:[],edus:[],skills:"",langs:"",certs:""};fill()}};
+$("clear").onclick=function(){if(confirm("تمسح كل البيانات؟")){var t=D.t,c=D.c;D={t:t,c:c,lang:"ar",photo:"",name:"",title:"",phone:"",email:"",city:"",link:"",sum:"",exps:[],edus:[],skills:"",langs:"",certs:"",proj:""};fill()}};
 $("sample").onclick=function(){D.name="أحمد محمد علي";D.title="محاسب أول";D.phone="01012345678";D.email="ahmed@example.com";D.city="الإسكندرية";D.link="linkedin.com/in/ahmed";
  D.sum="محاسب بخبرة 5 سنين في الحسابات العامة والموازنات. بحب الدقة والالتزام بالمواعيد، وعندي خبرة قوية في برامج المحاسبة والإكسل.";
  D.exps=[{r:"محاسب أول",co:"شركة النيل للتجارة",p:"2021 - الآن",d:"إعداد القوائم المالية الشهرية\nقللت وقت إقفال الشهر من 10 أيام لـ 6 أيام\nإدارة فريق من 3 محاسبين"},{r:"محاسب",co:"مكتب الأمل للمراجعة",p:"2019 - 2021",d:"مراجعة حسابات 15 عميل\nتجهيز الإقرارات الضريبية"}];
  D.edus=[{r:"بكالوريوس تجارة - محاسبة",co:"جامعة الإسكندرية",p:"2015 - 2019"}];
- D.skills="إكسل متقدم، قوائم مالية، ضرائب، Odoo، عمل جماعي";D.langs="العربية (الأم)، English (جيد جداً)";D.certs="دبلومة المحاسبة الضريبية\nICDL";fill()};
+ D.skills="إكسل متقدم، قوائم مالية، ضرائب، Odoo، عمل جماعي";D.langs="العربية (الأم)، English (جيد جداً)";D.certs="دبلومة المحاسبة الضريبية\nICDL";D.proj="أتمتة تقرير المصروفات الشهري بالإكسل ووفرت 12 ساعة في الشهر";fill()};
 $("te").onclick=$("back").onclick=function(){$("main").className="ed";$("te").className="on";$("tp").className=""};
 $("tp").onclick=function(){$("main").className="pv";$("tp").className="on";$("te").className="";setTimeout(fit,50)};
-window.addEventListener("resize",fit);window.addEventListener("beforeprint",function(){$("pagebox").style.transform="none"});window.addEventListener("afterprint",fit);
+window.addEventListener("resize",fit);window.addEventListener("beforeprint",function(){$("cv").style.zoom=1});window.addEventListener("afterprint",fit);
 if(window.matchMedia("(max-width:860px)").matches)$("main").className="ed";else $("main").className="";
 fill();
 </script></body></html>
