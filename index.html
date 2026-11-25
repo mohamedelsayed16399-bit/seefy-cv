@@ -98,6 +98,7 @@ textarea{min-height:70px;resize:vertical}
 <h2>اللغات</h2><input id="langs" placeholder="العربية (الأم)، English (جيد جداً)">
 <h2>كورسات وشهادات</h2><textarea id="certs" placeholder="كل شهادة في سطر"></textarea>
 <h2>مشاريع وإنجازات</h2><textarea id="proj" placeholder="كل مشروع أو إنجاز في سطر"></textarea>
+<h2>طابق الـ CV مع إعلان الوظيفة 🎯</h2><label>الصق وصف الوظيفة أو متطلباتها (مش بيتحفظ ولا بيتبعت)</label><textarea id="jd" style="min-height:90px"></textarea><div id="jdr" class="tips"></div>
 <h2>قوة الـ CV</h2><div class="score"><b id="sc"></b></div><div class="tips" id="tips"></div>
 <button class="btn big" id="print">⬇️ حمّل PDF / اطبع</button>
 <div class="row" style="margin-top:8px"><button class="btn l" id="exp">💾 احفظ نسخة (ملف)</button><button class="btn l" id="imp">📂 افتح نسخة</button></div>
@@ -166,7 +167,15 @@ function score(){var p=0,t=[];
  ck(D.photo,5,"الصورة اختيارية بس بتفرق في بعض الشركات");ck(chips(D.langs).length,5,"ضيف اللغات اللي بتتكلمها");
  if(D.exps.some(function(e){return e.d&&!/\d/.test(e.d)}))t.push("حط أرقام في إنجازاتك (مثال: زودت المبيعات 20%)");
  $("sc").style.width=p+"%";$("tips").innerHTML=p>=95?"🌟 السيرة ممتازة وجاهزة!":t.slice(0,4).map(function(x){return "• "+x}).join("<br>")}
-function upd(){save();render();score()}
+var SW="looking experience years year work team ability strong skills required responsibilities job role candidate must should able good have has was were all any can who the and for with you your our are will have from that this لكل على فى في من الى إلى عن مع أو او التي الذي هذه هذا ان أن كما يجب ذلك بعد قبل كان تكون ويكون لديه لديها خبرة سنوات".split(" ");
+function jd(){var t=($("jd").value||"").toLowerCase();if(t.length<30){$("jdr").innerHTML="اللصق هنا بيوريك الكلمات المهمة اللي ناقصة في الـ CV (الشركات بتفلتر بيها).";return}
+ var w=t.match(/[a-z0-9+#.]{3,}|[\u0600-\u06FF]{3,}/g)||[],f={};w.forEach(function(x){x=x.replace(/^[.]+|[.]+$/g,"");if(x.length<3||SW.indexOf(x)>-1)return;f[x]=(f[x]||0)+1});
+ var k=Object.keys(f).sort(function(a,b){return f[b]-f[a]||b.length-a.length}).slice(0,15);
+ var cv=[D.name,D.title,D.sum,D.skills,D.certs,D.proj,D.exps.map(function(e){return e.r+" "+e.co+" "+e.d}).join(" "),D.edus.map(function(e){return e.r}).join(" ")].join(" ").toLowerCase();
+ var ok=k.filter(function(x){return cv.indexOf(x)>-1}),no=k.filter(function(x){return cv.indexOf(x)<0});
+ $("jdr").innerHTML="التطابق: <b>"+Math.round(ok.length/Math.max(1,k.length)*100)+"%</b> من أهم "+k.length+" كلمة<br>✅ موجودة: "+(ok.map(esc).join("، ")||"-")+"<br>❌ ناقصة: "+(no.map(esc).join("، ")||"ولا واحدة 🎉")+"<br>ضيف الناقص في المهارات أو الخبرات لو فعلاً عندك الخبرة دي."}
+$("jd").addEventListener("input",jd);
+function upd(){jd();save();render();score()}
 $("print").onclick=function(){document.title=(D.name||"CV")+" - CV";window.print()};
 $("exp").onclick=function(){var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(D)],{type:"application/json"}));a.download="cv-backup.json";a.click()};
 $("imp").onclick=function(){$("impf").click()};
